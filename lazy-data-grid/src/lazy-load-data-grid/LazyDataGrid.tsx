@@ -12,8 +12,6 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
 
   const gridHeaderRootRef = useRef<HTMLDivElement>(null);
 
-  const gridHorizontalScrollRootRef = useRef<HTMLDivElement>(null);
-
   const [verticalScrollBarWidth, setVerticalScrollBarWidth] = useState(0);
   const [headerFullWidth, setHeaderFullWidth] = useState(0);
 
@@ -57,35 +55,27 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
 
     return () => observer.disconnect();
   }, []);
-  //   const isSyncingRef = useRef(false);
+
   useEffect(() => {
     const header = gridHeaderRootRef.current;
     const body = gridBodyRootRef.current;
-    const horizontalScroll = gridHorizontalScrollRootRef.current;
-    if (!header || !body || !horizontalScroll) return;
 
-    // const isSyncingRef = { current: false };
+    if (!header || !body) return;
 
     const scrollSync = () => {
-      //   if (isSyncingRef.current) return;
-      //   isSyncingRef.current = true;
-
-      header.scrollLeft = horizontalScroll.scrollLeft;
-      body.scrollLeft = horizontalScroll.scrollLeft;
-
-      //   isSyncingRef.current = false;
+      header.scrollLeft = body.scrollLeft;
     };
 
-    horizontalScroll.addEventListener("scroll", scrollSync);
+    body.addEventListener("scroll", scrollSync);
     return () => {
-      horizontalScroll.removeEventListener("scroll", scrollSync);
+      body.removeEventListener("scroll", scrollSync);
     };
   }, []);
 
   return (
     <>
       <Button
-        onClick={() => scrollToPixel(4000000)}
+        onClick={() => scrollToPixel(840)}
         variant="contained"
         sx={{ mb: 2 }}
       >
@@ -115,7 +105,7 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
                 <Box
                   component="span"
                   minWidth={`${verticalScrollBarWidth}px`}
-                  sx={{ backgroundColor: "yellow" }}
+                  sx={{ backgroundColor: "yellow", flex: 1 }}
                 ></Box>
               </Box>
             </Box>
@@ -131,7 +121,7 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
                 width="100%"
                 className="body-background-panel"
               >
-                <Box paddingTop="">
+                <Box paddingTop="800px">
                   {rows.map((row: any, index: number) => (
                     <Row
                       key={row.id}
@@ -144,21 +134,6 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
                   ))}
                 </Box>
               </Box>
-            </Box>
-
-            {/* Bottom scrollbar: fixed height */}
-            <Box
-              ref={gridHorizontalScrollRootRef}
-              className="lazy-data-grid-horizontal-scroll-root"
-              sx={{
-                minHeight: "20px",
-                flexShrink: 0,
-                background: "gray",
-              }}
-            >
-              <Box
-                width={`${headerFullWidth + verticalScrollBarWidth}px`}
-              ></Box>
             </Box>
           </Box>
 
