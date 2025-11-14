@@ -1,0 +1,30 @@
+.lazy-data-grid {
+  .lazy-data-grid-root {
+    display: flex;
+    flex-direction: column;
+  }
+  .lazy-data-grid-header-root {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid #ccc;
+    white-space: nowrap;
+    .header-container {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      user-select: none;
+      font-weight: 600;
+      .header-cell {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0 8px;
+        border-right: 1px solid #e11f1fff;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}

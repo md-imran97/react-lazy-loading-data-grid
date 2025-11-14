@@ -28,6 +28,9 @@ export interface LazyDataGridProps<T> {
    */
   rowHeight?: number;
 
+  /** Header Height (default: 40px) */
+  headerHeight?: number;
+
   /**
    * Function to return a CSS class for each row.
    * Similar to MUI's getRowClassName
