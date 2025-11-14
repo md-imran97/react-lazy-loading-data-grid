@@ -1,20 +1,6 @@
-// Basic helper types
 export type Align = "left" | "center" | "right";
-export type ColumnType = "string" | "number" | "date" | "boolean" | "custom";
-export type SortDirection = "asc" | "desc" | null;
-export type Comparator<TValue> = (a: TValue, b: TValue) => number;
 
 // Value getter/formatter types
-export type ValueGetter<T, V = any> = (params: {
-  row: T;
-  rowIndex: number;
-  field: string;
-}) => V;
-
-export type ValueFormatter<V = any> = (
-  value: V,
-  params: { row: any; rowIndex: number }
-) => string;
 
 // Renderers
 export type CellRenderer<T> = (params: {
@@ -26,23 +12,6 @@ export type CellRenderer<T> = (params: {
 
 export type HeaderRenderer = (params: {
   colDef: ColumnDef<any>;
-}) => React.ReactNode;
-
-// Filter / Edit related
-export type FilterOperator<T> = {
-  id: string;
-  label: string;
-  // how to match rows: receives cell value and filter value
-  apply: (cellValue: any, filterValue: any, row: T) => boolean;
-  // optional input component/render for the operator
-  InputComponent?: React.ComponentType<any>;
-};
-
-export type EditRenderer<T> = (params: {
-  value: any;
-  row: T;
-  rowIndex: number;
-  onChange: (newValue: any) => void;
 }) => React.ReactNode;
 
 // Column pinning

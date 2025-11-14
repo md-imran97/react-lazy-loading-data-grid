@@ -1,7 +1,13 @@
 .lazy-data-grid {
+  height: 100%;
   .lazy-data-grid-root {
     display: flex;
     flex-direction: column;
+  }
+  .lazy-data-grid-horizontal-scroll-root {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
   .lazy-data-grid-header-root {
     width: 100%;
@@ -26,5 +32,16 @@
         text-overflow: ellipsis;
       }
     }
+  }
+  .lazy-data-grid-body-root {
+    flex: 1;
+    overflow: auto;
+  }
+  .lazy-data-grid-content-root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: lightblue;
   }
 }
