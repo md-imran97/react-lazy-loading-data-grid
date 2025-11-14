@@ -105,7 +105,9 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
                 <Box
                   component="span"
                   minWidth={`${verticalScrollBarWidth}px`}
-                  sx={{ backgroundColor: "yellow", flex: 1 }}
+                  width={`${verticalScrollBarWidth}px`}
+                  // maxWidth={`${verticalScrollBarWidth}px`}
+                  sx={{ backgroundColor: "yellow" }}
                 ></Box>
               </Box>
             </Box>
@@ -129,7 +131,12 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
                       rowIndex={index}
                       columns={props.columns}
                       rowHeight={40}
-                      onRowClick={(row) => console.log("Clicked", row)}
+                      onRowClick={(row, index) =>
+                        console.log("Clicked", row, index)
+                      }
+                      getRowClass={(row) =>
+                        row.row?.id % 2 == 0 ? "even" : "odd"
+                      }
                     />
                   ))}
                 </Box>

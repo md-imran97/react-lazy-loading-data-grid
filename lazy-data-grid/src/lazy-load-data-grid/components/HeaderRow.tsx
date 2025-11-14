@@ -13,6 +13,7 @@ function GenericHeaderRow<T>(
       className="header-container"
       height={headerHeight}
       display="flex"
+      flex={1}
     >
       {columns.map((col) => {
         const headerContent = col.renderHeader
