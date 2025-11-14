@@ -5,7 +5,7 @@ import { dummyColumns } from "./lazy-load-data-grid/dummy-data/dummyColumns";
 function App() {
   return (
     <Box
-      height="500px"
+      height="600px"
       width="50%"
       sx={{
         backgroundColor: "#efeee8",

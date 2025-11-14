@@ -15,6 +15,7 @@
     overflow-y: hidden;
     border: 1px solid #ccc;
     white-space: nowrap;
+    scrollbar-width: none;
     .header-container {
       display: flex;
       align-items: center;
@@ -35,8 +36,10 @@
   }
   .lazy-data-grid-body-root {
     flex: 1;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
+
   .lazy-data-grid-content-root {
     flex: 1;
     display: flex;

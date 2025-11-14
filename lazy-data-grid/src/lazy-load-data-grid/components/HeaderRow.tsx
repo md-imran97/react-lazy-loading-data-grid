@@ -1,28 +1,41 @@
 import { Box } from "@mui/material";
+import React, { type JSX } from "react";
 import type { HeaderRowProps } from "../types/HeaderRowProps";
 import { DEFAULT_MIN_COL_WIDTH, DEFAULT_ROW_HEIGHT } from "../constant";
-import React, { type JSX } from "react";
 
-function GenericHeaderRow<T>({
-  columns,
-  headerHeight = DEFAULT_ROW_HEIGHT,
-}: HeaderRowProps<T>) {
+function GenericHeaderRow<T>(
+  { columns, headerHeight = DEFAULT_ROW_HEIGHT }: HeaderRowProps<T>,
+  ref: React.Ref<HTMLDivElement>
+) {
   return (
-    <Box className="header-container" height={headerHeight}>
+    <Box
+      ref={ref}
+      className="header-container"
+      height={headerHeight}
+      display="flex"
+    >
       {columns.map((col) => {
         const headerContent = col.renderHeader
           ? col.renderHeader({ colDef: col })
           : col.headerName ?? col.field;
 
+        const headerClass =
+          typeof col.headerClassName === "function"
+            ? col.headerClassName()
+            : col.headerClassName;
+
         return (
           <Box
-            className={`header-cell ${col.headerClassName}`}
             key={col.field}
+            className={`header-cell ${headerClass ?? ""}`}
             sx={{
               flex: col.flex ?? undefined,
               width: col.width ?? undefined,
               minWidth: col.minWidth ?? DEFAULT_MIN_COL_WIDTH,
               maxWidth: col.maxWidth,
+              display: "flex",
+              alignItems: "center",
+              px: 1,
               justifyContent:
                 col.align === "right"
                   ? "flex-end"
@@ -38,8 +51,9 @@ function GenericHeaderRow<T>({
     </Box>
   );
 }
-const HeaderRow = React.memo(GenericHeaderRow) as <T>(
-  props: HeaderRowProps<T>
+
+const HeaderRow = React.memo(React.forwardRef(GenericHeaderRow)) as <T>(
+  props: HeaderRowProps<T> & { ref?: React.Ref<HTMLDivElement> }
 ) => JSX.Element;
 
 export default HeaderRow;

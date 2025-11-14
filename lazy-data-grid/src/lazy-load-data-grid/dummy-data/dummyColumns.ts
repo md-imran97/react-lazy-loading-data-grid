@@ -60,6 +60,6 @@ export const dummyColumns: ColumnDef<any>[] = [
     field: "score",
     headerName: "Score",
     flex: 1,
-    minWidth: 200,
+    minWidth: 100,
   },
 ];
