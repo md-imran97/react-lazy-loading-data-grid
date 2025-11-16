@@ -24,9 +24,10 @@ export function Cell<T>({ row, rowIndex, colDef }: CellProps<T>) {
   return (
     <Box
       className={`lazy-grid-cell ${className}`}
-      style={{
+      sx={{
+        overflow: "hidden",
         flex: colDef.flex ?? undefined,
-        width: colDef.width ?? undefined,
+        width: colDef.width ?? colDef.minWidth,
         minWidth: colDef.minWidth ?? DEFAULT_MIN_COL_WIDTH,
         maxWidth: colDef.maxWidth,
         justifyContent:
@@ -37,7 +38,7 @@ export function Cell<T>({ row, rowIndex, colDef }: CellProps<T>) {
             : "flex-start",
       }}
     >
-      {content}
+      <Box className="cell-content">{content}</Box>
     </Box>
   );
 }

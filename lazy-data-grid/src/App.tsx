@@ -67,9 +67,10 @@ function App() {
               field: "name",
               minWidth: 200,
               flex: 1,
-              // renderCell: ({ row }) => {
-              //   return <>{row.name}</>;
-              // },
+              headerName: "sldfjkasdfjksfjskdfjskfjskfjskdfjskfd",
+              renderCell: ({ row }) => {
+                return <>{row.name}</>;
+              },
             },
             { field: "address", minWidth: 200, flex: 1 },
           ]}

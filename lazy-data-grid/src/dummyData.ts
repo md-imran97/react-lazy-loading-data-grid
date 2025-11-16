@@ -20,7 +20,7 @@ export async function fetchData(
 const dummyData = [
   {
     docId: "doc-1",
-    name: "Name 1",
+    name: "Name 1 fasdffasdfasdfasdfsdfasdfasfasfsdf",
     address: "Address 1, City 1",
   },
   {
