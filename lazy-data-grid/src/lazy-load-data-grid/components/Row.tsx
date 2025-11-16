@@ -37,6 +37,7 @@ export function Row<T>({
           userSelect: "none",
           boxSizing: "border-box",
           backgroundColor: "red",
+          flex: 1,
         }}
       >
         {columns.map((col) => (

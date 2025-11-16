@@ -57,14 +57,19 @@ function App() {
           uniqueDataKey="docId"
           dataSource={dataSource}
           columns={[
-            { field: "docId", minWidth: 200, flex: 1 },
+            {
+              field: "docId",
+              // headerName: "sldfjkasdfjksfjskdfjskfjskfjskdfjskfd",
+              minWidth: 200,
+              flex: 1,
+            },
             {
               field: "name",
               minWidth: 200,
               flex: 1,
-              renderCell: ({ row }) => {
-                return <>{row.name}</>;
-              },
+              // renderCell: ({ row }) => {
+              //   return <>{row.name}</>;
+              // },
             },
             { field: "address", minWidth: 200, flex: 1 },
           ]}
