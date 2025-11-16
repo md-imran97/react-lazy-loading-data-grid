@@ -11,22 +11,33 @@ import {
   useRef,
   useState,
 } from "react";
-import { DEFAULT_ROW_HEIGHT } from "./constant";
+import {
+  DEFAULT_CACHED_ROW_SIZE,
+  DEFAULT_FOOTER_HEIGHT,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_REQUEST_DEBOUNCE_TIME,
+  DEFAULT_ROW_HEIGHT,
+} from "./constant";
 import _ from "lodash";
 import type { LazyDataGridApi } from "./types/LazyDataGridApi";
-
-const DEFAULT_CACHED_ROW_BUFFER = 20;
 
 export function GenericLazyDataGrid<T>(
   props: LazyDataGridProps<T>,
   ref: React.Ref<LazyDataGridApi>
 ) {
   const {
+    columns = [],
     dataSource,
     rowHeight = DEFAULT_ROW_HEIGHT,
     headerHeight,
-    pageSize = 0,
+    pageSize = DEFAULT_PAGE_SIZE,
     uniqueDataKey = "id",
+    dataRequestDebouceTime = DEFAULT_REQUEST_DEBOUNCE_TIME,
+    showFooter = false,
+    footerHeight = DEFAULT_FOOTER_HEIGHT,
+    additionalRowCacheSize = DEFAULT_CACHED_ROW_SIZE,
+    footer,
+    getRowClass,
   } = props;
 
   const [rowsData, setRowsData] = useState<T[]>([]);
@@ -40,13 +51,13 @@ export function GenericLazyDataGrid<T>(
   const gridHeaderRootRef = useRef<HTMLDivElement>(null);
 
   const [verticalScrollBarWidth, setVerticalScrollBarWidth] = useState(0);
-  // const [headerFullWidth, setHeaderFullWidth] = useState(0);
+  const [headerFullWidth, setHeaderFullWidth] = useState(0);
 
   const gridBodyTopVisiblePosition = useRef<number>(0);
 
   useImperativeHandle(ref, () => ({
     scrollToIndex: (rowIndex: number) => {
-      scrollToPixel(rowIndex * rowHeight);
+      scrollToPosition(rowIndex * rowHeight);
     },
     reloadData: () => handleScroll(true),
   }));
@@ -54,11 +65,10 @@ export function GenericLazyDataGrid<T>(
     () =>
       _.debounce((topVisiblePosition: number) => {
         displayRowsData(topVisiblePosition);
-      }, 100),
+      }, dataRequestDebouceTime),
     []
   );
   const handleScroll = (forceReload = false) => {
-    debugger;
     const el = gridBodyRootRef.current;
     if (!el) return;
     const topVisiblePosition = el.scrollTop;
@@ -66,17 +76,16 @@ export function GenericLazyDataGrid<T>(
       forceReload ||
       rowsData.length == 0 ||
       Math.abs(topVisiblePosition - gridBodyTopVisiblePosition.current) >=
-        DEFAULT_CACHED_ROW_BUFFER * rowHeight
+        (additionalRowCacheSize / 2) * rowHeight
     ) {
       gridBodyTopVisiblePosition.current = topVisiblePosition;
       debouncedDisplayRowsData(topVisiblePosition);
-      // displayRowsData(topVisiblePosition);
     }
   };
-  const scrollToPixel = (px: number) => {
+  const scrollToPosition = (position: number) => {
     const el = gridBodyRootRef.current;
     if (!el) return;
-    el.scrollTop = px;
+    el.scrollTop = position;
   };
 
   const getRowsData = async (startIndex: number, endIndex: number) => {
@@ -88,9 +97,9 @@ export function GenericLazyDataGrid<T>(
     const topInvisibleRows = Math.floor(startPosition / rowHeight);
     let startIndex = 0;
 
-    if (topInvisibleRows < 40) startIndex = 0;
+    if (topInvisibleRows < additionalRowCacheSize) startIndex = 0;
     else {
-      startIndex = topInvisibleRows - 40;
+      startIndex = topInvisibleRows - additionalRowCacheSize;
     }
     const endIndex = startIndex + pageSize;
     const rowsInfo = await getRowsData(startIndex, endIndex);
@@ -110,9 +119,9 @@ export function GenericLazyDataGrid<T>(
             gridBodyRootRef.current.clientWidth
         );
       }
-      // if (gridHeaderContainerRef.current) {
-      //   // setHeaderFullWidth(gridHeaderContainerRef.current.offsetWidth);
-      // }
+      if (gridHeaderContainerRef.current) {
+        setHeaderFullWidth(gridHeaderContainerRef.current.clientWidth);
+      }
     });
     if (gridBodyRootRef.current) {
       observer.observe(gridBodyRootRef.current);
@@ -146,52 +155,24 @@ export function GenericLazyDataGrid<T>(
 
   return (
     <>
-      <Button
-        onClick={() => {
-          setRowsData((prev) => {
-            return prev.map((row) => {
-              return { ...row, name: "imran" };
-            });
-          });
-          // scrollToPixel(500 * 40)
-        }}
-        variant="contained"
-        sx={{ mb: 2 }}
-      >
-        gsdfg
-      </Button>
       <Box className="lazy-data-grid">
-        <Box
-          className="lazy-data-grid-root"
-          sx={{
-            height: "100%", // parent takes full height
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <Box className="lazy-data-grid-root">
           <Box className="lazy-data-grid-content-root">
-            {/* Header: fixed height */}
-            <Box
-              ref={gridHeaderRootRef}
-              className="lazy-data-grid-header-root"
-              // sx={{ height: "57px", flexShrink: 0 }}
-            >
-              <Box sx={{ display: "flex" }}>
+            <Box ref={gridHeaderRootRef} className="lazy-data-grid-header-root">
+              <Box display="flex">
                 <HeaderRow
-                  columns={props.columns}
+                  columns={columns}
                   ref={gridHeaderContainerRef}
+                  headerHeight={headerHeight}
                 />
                 <Box
                   component="span"
                   minWidth={`${verticalScrollBarWidth}px`}
                   width={`${verticalScrollBarWidth}px`}
-                  // maxWidth={`${verticalScrollBarWidth}px`}
-                  sx={{ backgroundColor: "yellow" }}
                 ></Box>
               </Box>
             </Box>
 
-            {/* Body: takes remaining height */}
             <Box
               className="lazy-data-grid-body-root"
               ref={gridBodyRootRef}
@@ -199,7 +180,7 @@ export function GenericLazyDataGrid<T>(
             >
               <Box
                 height={`${gridBodyHeight}px`}
-                width="100%"
+                width={rowsData.length ? "100%" : `${headerFullWidth}px`}
                 className="body-background-panel"
               >
                 <Box paddingTop={`${rowsSegmentTopPadding}px`}>
@@ -208,34 +189,27 @@ export function GenericLazyDataGrid<T>(
                       key={row[uniqueDataKey]}
                       row={row}
                       rowIndex={index}
-                      columns={props.columns}
+                      columns={columns}
                       rowHeight={rowHeight}
-                      onRowClick={(row, index) =>
-                        console.log("Clicked", row, index)
-                      }
-                      getRowClass={(row) =>
-                        row.row?.id % 2 == 0 ? "even" : "odd"
-                      }
+                      onRowClick={(row) => console.log("Clicked", row)}
+                      getRowClass={(row) => getRowClass?.(row) ?? ""}
                     />
                   ))}
                 </Box>
               </Box>
             </Box>
           </Box>
-
-          <Box
-            className="lazy-data-grid-footer-root"
-            sx={{
-              height: "80px", // fixed height
-              background: "lightgreen",
-              display: "flex",
-              flex: 1,
-              minHeight: "50px",
-              maxHeight: "80px",
-            }}
-          >
-            lazy-data-grid-footer-root
-          </Box>
+          {showFooter && (
+            <Box
+              className="lazy-data-grid-footer-root"
+              sx={{
+                minHeight: `${footerHeight}px`,
+                maxHeight: `${footerHeight}px`,
+              }}
+            >
+              {footer}
+            </Box>
+          )}
         </Box>
       </Box>
     </>

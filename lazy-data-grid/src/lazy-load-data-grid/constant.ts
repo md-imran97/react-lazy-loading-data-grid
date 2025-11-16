@@ -1,3 +1,7 @@
-export const DEFAULT_ROW_HEIGHT = 40;
-export const DEFAULT_HEADER_HEIGHT = 40;
+export const DEFAULT_ROW_HEIGHT = 36;
+export const DEFAULT_HEADER_HEIGHT = 36;
+export const DEFAULT_FOOTER_HEIGHT = 50;
 export const DEFAULT_MIN_COL_WIDTH = 50;
+export const DEFAULT_REQUEST_DEBOUNCE_TIME = 100;
+export const DEFAULT_CACHED_ROW_SIZE = 40;
+export const DEFAULT_PAGE_SIZE = 100;

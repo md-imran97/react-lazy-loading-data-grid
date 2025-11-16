@@ -8,14 +8,7 @@ function GenericHeaderRow<T>(
   ref: React.Ref<HTMLDivElement>
 ) {
   return (
-    <Box
-      ref={ref}
-      className="header-container"
-      height={headerHeight}
-      display="flex"
-      flex={1}
-      sx={{ backgroundColor: "red" }}
-    >
+    <Box ref={ref} className="lazy-header-container" height={headerHeight}>
       {columns.map((col) => {
         const headerContent = col.renderHeader
           ? col.renderHeader({ colDef: col })
@@ -29,15 +22,13 @@ function GenericHeaderRow<T>(
         return (
           <Box
             key={col.field}
-            className={`header-cell ${headerClass ?? ""}`}
+            className={`lazy-header-cell ${headerClass}`}
             sx={{
               flex: col.flex ?? undefined,
-              width: col.width ?? undefined,
+              width: col.width ?? col.minWidth ?? DEFAULT_MIN_COL_WIDTH,
               minWidth: col.minWidth ?? DEFAULT_MIN_COL_WIDTH,
               maxWidth: col.maxWidth,
-              display: "flex",
-              alignItems: "center",
-              boxSizing: "border-box",
+
               px: 1,
               justifyContent:
                 col.align === "right"
@@ -47,7 +38,7 @@ function GenericHeaderRow<T>(
                   : "flex-start",
             }}
           >
-            <span>{headerContent}</span>
+            <Box className="lazy-header-cell-content">{headerContent}</Box>
           </Box>
         );
       })}

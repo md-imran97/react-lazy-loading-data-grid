@@ -9,8 +9,8 @@ interface RowProps<T> {
   rowIndex: number;
   columns: ColumnDef<T>[];
   rowHeight?: number;
-  onRowClick?: (row: T, rowIndex: number) => void;
-  getRowClass?: (params: { row: T; rowIndex: number }) => string;
+  onRowClick?: (row: T) => void;
+  getRowClass?: (row: T) => string;
 }
 
 export function Row<T>({
@@ -21,23 +21,16 @@ export function Row<T>({
   onRowClick,
   getRowClass,
 }: RowProps<T>) {
-  const className = getRowClass ? getRowClass({ row, rowIndex }) : "";
+  const className = getRowClass ? getRowClass(row) : "";
 
   return (
-    <Box display="flex">
+    <Box className="lazy-grid-row-container">
       <Box
-        className={className}
-        onClick={() => onRowClick?.(row, rowIndex)}
-        style={{
-          display: "flex",
+        className={`lazy-grid-row ${className}`}
+        onClick={() => onRowClick?.(row)}
+        sx={{
           height: rowHeight,
-          alignItems: "center",
-          borderBottom: "1px solid #eee",
           cursor: onRowClick ? "pointer" : "default",
-          userSelect: "none",
-          boxSizing: "border-box",
-          backgroundColor: "red",
-          flex: 1,
         }}
       >
         {columns.map((col) => (

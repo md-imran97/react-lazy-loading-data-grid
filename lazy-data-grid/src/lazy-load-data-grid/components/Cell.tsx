@@ -18,16 +18,15 @@ export function Cell<T>({ row, rowIndex, colDef }: CellProps<T>) {
 
   const className =
     typeof colDef.cellClassName === "function"
-      ? colDef.cellClassName({ row, rowIndex, value: rawValue })
+      ? colDef.cellClassName(row)
       : colDef.cellClassName;
 
   return (
     <Box
       className={`lazy-grid-cell ${className}`}
       sx={{
-        overflow: "hidden",
         flex: colDef.flex ?? undefined,
-        width: colDef.width ?? colDef.minWidth,
+        width: colDef.width ?? colDef.minWidth ?? DEFAULT_MIN_COL_WIDTH,
         minWidth: colDef.minWidth ?? DEFAULT_MIN_COL_WIDTH,
         maxWidth: colDef.maxWidth,
         justifyContent:

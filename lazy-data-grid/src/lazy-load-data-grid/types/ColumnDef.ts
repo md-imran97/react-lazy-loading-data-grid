@@ -1,8 +1,5 @@
 export type Align = "left" | "center" | "right";
 
-// Value getter/formatter types
-
-// Renderers
 export type CellRenderer<T> = (params: {
   value: any;
   row: T;
@@ -14,41 +11,16 @@ export type HeaderRenderer = (params: {
   colDef: ColumnDef<any>;
 }) => React.ReactNode;
 
-// Column pinning
-export type Pin = "left" | "right" | null;
-
-// Main column def
 export interface ColumnDef<T> {
-  /** Unique identifier for the column (used for state/visibility/sorting) */
   field: string;
-
-  /** Label shown in header */
   headerName?: string;
-
-  /** explicit fixed width in px; if set, flex is ignored */
   width?: number;
-
-  /** flexible grow factor (like flex in CSS) */
   flex?: number;
-
-  /** minimum and maximum width in px (used during resize/layout) */
   minWidth?: number;
   maxWidth?: number;
-
-  /** alignment for cell contents */
   align?: Align;
-
-  /** custom render for the cell */
   renderCell?: CellRenderer<T>;
-
-  /** custom render for the header */
   renderHeader?: HeaderRenderer;
-
-  /** CSS class or function to apply to cell */
-  cellClassName?:
-    | string
-    | ((params: { row: T; rowIndex: number; value: any }) => string);
-
-  /** CSS class or function to apply to header */
   headerClassName?: string | (() => string);
+  cellClassName?: string | ((row: T) => string);
 }

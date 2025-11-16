@@ -25,14 +25,14 @@ function App() {
   };
   return (
     <>
-      <Button
+      {/* <Button
         onClick={() => {
-          apiRef.current.scrollToIndex(44);
+          apiRef.current?.scrollToIndex(454);
         }}
         variant="contained"
         sx={{ mb: 2 }}
       >
-        Scroll to 44
+        Scroll to 455
       </Button>
       <Button
         onClick={() => {
@@ -42,7 +42,7 @@ function App() {
         sx={{ mb: 2 }}
       >
         Reload DAta
-      </Button>
+      </Button> */}
       <Box
         height="600px"
         width="50%"
@@ -53,13 +53,15 @@ function App() {
         }}
       >
         <LazyDataGrid
+          showFooter
+          footer={<>abcdefg</>}
           ref={apiRef}
           uniqueDataKey="docId"
           dataSource={dataSource}
           columns={[
             {
               field: "docId",
-              // headerName: "sldfjkasdfjksfjskdfjskfjskfjskdfjskfd",
+              headerName: "sldfjkasdfjksfjskdfjskfjskfjskdfjskfd",
               minWidth: 200,
               flex: 1,
             },
@@ -67,7 +69,7 @@ function App() {
               field: "name",
               minWidth: 200,
               flex: 1,
-              headerName: "sldfjkasdfjksfjskdfjskfjskfjskdfjskfd",
+              // headerName: "sldfjkasdfjksfjskdfjskfjskfjskdfjskfd",
               renderCell: ({ row }) => {
                 return <>{row.name}</>;
               },

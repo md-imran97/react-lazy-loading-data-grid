@@ -1,48 +1,20 @@
 import type { ColumnDef } from "./ColumnDef";
 
 export interface LazyDataGridProps<T> {
-  /** Full dataset for client-side mode */
-  rows?: T[];
   uniqueDataKey: string;
-
-  /** Column definitions */
+  dataRequestDebouceTime?: number;
+  showFooter?: boolean;
+  footerHeight?: number;
+  footer?: React.ReactNode;
+  additionalRowCacheSize?: number;
   columns: ColumnDef<T>[];
-
-  /** Initial sort configuration */
-  initialSort?: { field: string; direction: "asc" | "desc" };
-
-  /** Row uniquely identifies a row (default: row.id) */
-  getRowId?: (row: T) => string | number;
-
-  /** Grid height (px or %) */
-  height?: number | string;
-
-  /** Grid width (px or %) */
-  width?: number | string;
-
-  /** Row click callback */
   onRowClick?: (row: T, rowIndex: number) => void;
-
-  /**
-   * Height of each data row (default: 40px)
-   * Used by virtualization/lazy loading
-   */
   rowHeight?: number;
-
-  /** Header Height (default: 40px) */
   headerHeight?: number;
-
-  /**
-   * Function to return a CSS class for each row.
-   * Similar to MUI's getRowClassName
-   */
   getRowClass?: (params: { row: T; rowIndex: number }) => string;
+  pageSize?: number;
 
   dataSource: {
-    /**
-     * Fetch rows from server.
-     * Receives the requested row range.
-     */
     getRows: (
       startIndex: number,
       endIndex: number
@@ -51,5 +23,4 @@ export interface LazyDataGridProps<T> {
       totalRowCount: number;
     }>;
   };
-  pageSize?: number;
 }
