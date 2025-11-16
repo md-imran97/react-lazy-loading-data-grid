@@ -205,6 +205,7 @@ export function GenericLazyDataGrid<T>(
               sx={{
                 minHeight: `${footerHeight}px`,
                 maxHeight: `${footerHeight}px`,
+                height: `${footerHeight}px`,
               }}
             >
               {footer}
