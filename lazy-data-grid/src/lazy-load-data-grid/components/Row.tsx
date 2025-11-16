@@ -34,6 +34,7 @@ export function Row<T>({
         borderBottom: "1px solid #eee",
         cursor: onRowClick ? "pointer" : "default",
         userSelect: "none",
+        boxSizing: "border-box",
       }}
     >
       {columns.map((col) => (
