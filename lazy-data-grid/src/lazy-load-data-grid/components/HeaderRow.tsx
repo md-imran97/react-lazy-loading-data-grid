@@ -14,6 +14,7 @@ function GenericHeaderRow<T>(
       height={headerHeight}
       display="flex"
       flex={1}
+      sx={{ backgroundColor: "red" }}
     >
       {columns.map((col) => {
         const headerContent = col.renderHeader

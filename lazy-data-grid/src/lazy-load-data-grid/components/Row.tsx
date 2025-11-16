@@ -24,22 +24,25 @@ export function Row<T>({
   const className = getRowClass ? getRowClass({ row, rowIndex }) : "";
 
   return (
-    <Box
-      className={className}
-      onClick={() => onRowClick?.(row, rowIndex)}
-      style={{
-        display: "flex",
-        height: rowHeight,
-        alignItems: "center",
-        borderBottom: "1px solid #eee",
-        cursor: onRowClick ? "pointer" : "default",
-        userSelect: "none",
-        boxSizing: "border-box",
-      }}
-    >
-      {columns.map((col) => (
-        <Cell key={col.field} row={row} rowIndex={rowIndex} colDef={col} />
-      ))}
+    <Box display="flex">
+      <Box
+        className={className}
+        onClick={() => onRowClick?.(row, rowIndex)}
+        style={{
+          display: "flex",
+          height: rowHeight,
+          alignItems: "center",
+          borderBottom: "1px solid #eee",
+          cursor: onRowClick ? "pointer" : "default",
+          userSelect: "none",
+          boxSizing: "border-box",
+          backgroundColor: "red",
+        }}
+      >
+        {columns.map((col) => (
+          <Cell key={col.field} row={row} rowIndex={rowIndex} colDef={col} />
+        ))}
+      </Box>
     </Box>
   );
 }

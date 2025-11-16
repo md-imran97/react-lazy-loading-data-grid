@@ -63,7 +63,6 @@ function App() {
               minWidth: 200,
               flex: 1,
               renderCell: ({ row }) => {
-                debugger;
                 return <>{row.name}</>;
               },
             },
