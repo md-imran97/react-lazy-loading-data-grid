@@ -3,35 +3,102 @@ import type { LazyDataGridProps } from "./types/LazyDataGridProps";
 import "./style/LazyDataGrid.scss";
 import HeaderRow from "./components/HeaderRow";
 import { Row } from "./components/Row";
-import { rows } from "./dummy-data/dummyRows";
-import { useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { DEFAULT_ROW_HEIGHT } from "./constant";
+import _ from "lodash";
+import type { LazyDataGridApi } from "./types/LazyDataGridApi";
 
-export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
+const DEFAULT_CACHED_ROW_BUFFER = 20;
+
+export function GenericLazyDataGrid<T>(
+  props: LazyDataGridProps<T>,
+  ref: React.Ref<LazyDataGridApi>
+) {
+  const {
+    dataSource,
+    rowHeight = DEFAULT_ROW_HEIGHT,
+    headerHeight,
+    pageSize = 0,
+    uniqueDataKey = "id",
+  } = props;
+
+  const [rowsData, setRowsData] = useState<T[]>([]);
+  const [totalRowCount, setTotalRowCount] = useState<number>(0);
+  const [gridBodyHeight, setGridBodyHeight] = useState<number>(0);
+  const [rowsSegmentTopPadding, setRowsSegmentTopPadding] = useState<number>(0);
+
   const gridHeaderContainerRef = useRef<HTMLDivElement>(null);
   const gridBodyRootRef = useRef<HTMLDivElement>(null);
 
   const gridHeaderRootRef = useRef<HTMLDivElement>(null);
 
   const [verticalScrollBarWidth, setVerticalScrollBarWidth] = useState(0);
-  const [headerFullWidth, setHeaderFullWidth] = useState(0);
+  // const [headerFullWidth, setHeaderFullWidth] = useState(0);
 
-  const handleScroll = () => {
+  const gridBodyTopVisiblePosition = useRef<number>(0);
+
+  useImperativeHandle(ref, () => ({
+    scrollToIndex: (rowIndex: number) => {
+      scrollToPixel(rowIndex * rowHeight);
+    },
+    reloadData: () => handleScroll(true),
+  }));
+  const debouncedDisplayRowsData = useMemo(
+    () =>
+      _.debounce((topVisiblePosition: number) => {
+        displayRowsData(topVisiblePosition);
+      }, 100),
+    []
+  );
+  const handleScroll = (forceReload = false) => {
     const el = gridBodyRootRef.current;
     if (!el) return;
-    const top = el.scrollTop;
-    const bottom = top + el.clientHeight;
-    debugger;
-    // setVisible({ top, bottom });
+    const topVisiblePosition = el.scrollTop;
+    if (
+      forceReload ||
+      rowsData.length == 0 ||
+      Math.abs(topVisiblePosition - gridBodyTopVisiblePosition.current) >=
+        DEFAULT_CACHED_ROW_BUFFER * rowHeight
+    ) {
+      gridBodyTopVisiblePosition.current = topVisiblePosition;
+      debouncedDisplayRowsData(topVisiblePosition);
+      // displayRowsData(topVisiblePosition);
+    }
   };
   const scrollToPixel = (px: number) => {
     const el = gridBodyRootRef.current;
     if (!el) return;
-
-    // Jump instantly
     el.scrollTop = px;
+  };
 
-    // Or smooth scroll
-    // el.scrollTo({ top: px, behavior: "smooth" });
+  const getRowsData = async (startIndex: number, endIndex: number) => {
+    const data = await dataSource?.getRows(startIndex, endIndex);
+    return data;
+  };
+
+  const displayRowsData = async (startPosition: number) => {
+    const topInvisibleRows = Math.floor(startPosition / rowHeight);
+    let startIndex = 0;
+
+    if (topInvisibleRows < 40) startIndex = 0;
+    else {
+      startIndex = topInvisibleRows - 40;
+    }
+    const endIndex = startIndex + pageSize;
+    const rowsInfo = await getRowsData(startIndex, endIndex);
+    setGridBodyHeight(rowsInfo.totalRowCount * rowHeight);
+    if (totalRowCount != rowsInfo?.totalRowCount) {
+      setTotalRowCount(rowsInfo?.totalRowCount ?? 0);
+    }
+    setRowsData(rowsInfo?.rows ?? []);
+    setRowsSegmentTopPadding(startIndex * rowHeight);
   };
 
   useEffect(() => {
@@ -42,9 +109,9 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
             gridBodyRootRef.current.clientWidth
         );
       }
-      if (gridHeaderContainerRef.current) {
-        setHeaderFullWidth(gridHeaderContainerRef.current.offsetWidth);
-      }
+      // if (gridHeaderContainerRef.current) {
+      //   // setHeaderFullWidth(gridHeaderContainerRef.current.offsetWidth);
+      // }
     });
     if (gridBodyRootRef.current) {
       observer.observe(gridBodyRootRef.current);
@@ -72,10 +139,21 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
     };
   }, []);
 
+  useEffect(() => {
+    handleScroll();
+  }, []);
+
   return (
     <>
       <Button
-        onClick={() => scrollToPixel(840)}
+        onClick={() => {
+          setRowsData((prev) => {
+            return prev.map((row) => {
+              return { ...row, name: "imran" };
+            });
+          });
+          // scrollToPixel(500 * 40)
+        }}
         variant="contained"
         sx={{ mb: 2 }}
       >
@@ -119,18 +197,18 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
               onScroll={handleScroll}
             >
               <Box
-                height="4000000px"
+                height={`${gridBodyHeight}px`}
                 width="100%"
                 className="body-background-panel"
               >
-                <Box paddingTop="800px">
-                  {rows.map((row: any, index: number) => (
+                <Box paddingTop={`${rowsSegmentTopPadding}px`}>
+                  {rowsData.map((row: any, index: number) => (
                     <Row
-                      key={row.id}
+                      key={row[uniqueDataKey]}
                       row={row}
                       rowIndex={index}
                       columns={props.columns}
-                      rowHeight={40}
+                      rowHeight={rowHeight}
                       onRowClick={(row, index) =>
                         console.log("Clicked", row, index)
                       }
@@ -162,3 +240,9 @@ export function LazyDataGrid<T>(props: LazyDataGridProps<T>) {
     </>
   );
 }
+
+export const LazyDataGrid = forwardRef(GenericLazyDataGrid) as <T>(
+  props: LazyDataGridProps<T> & {
+    ref?: React.Ref<LazyDataGridApi>;
+  }
+) => React.ReactElement;

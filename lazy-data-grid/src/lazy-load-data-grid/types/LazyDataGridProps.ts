@@ -3,6 +3,7 @@ import type { ColumnDef } from "./ColumnDef";
 export interface LazyDataGridProps<T> {
   /** Full dataset for client-side mode */
   rows?: T[];
+  uniqueDataKey: string;
 
   /** Column definitions */
   columns: ColumnDef<T>[];
@@ -37,31 +38,18 @@ export interface LazyDataGridProps<T> {
    */
   getRowClass?: (params: { row: T; rowIndex: number }) => string;
 
-  /**
-   * Lazy loading data source
-   * Similar to MUI's DataGridPro dataSource
-   */
-  dataSource?: {
+  dataSource: {
     /**
      * Fetch rows from server.
      * Receives the requested row range.
      */
-    getRows: (params: {
-      startIndex: number;
-      endIndex: number;
-      sortModel?: { field: string; direction: "asc" | "desc" } | null;
-    }) => Promise<{
+    getRows: (
+      startIndex: number,
+      endIndex: number
+    ) => Promise<{
       rows: T[];
       totalRowCount: number;
     }>;
-
-    /** Initial row count (if unknown, can be undefined) */
-    rowCount?: number;
-
-    /**
-     * Whether to cache fetched chunks
-     * (true = less network load, false = always refetch)
-     */
-    enableCache?: boolean;
   };
+  pageSize?: number;
 }

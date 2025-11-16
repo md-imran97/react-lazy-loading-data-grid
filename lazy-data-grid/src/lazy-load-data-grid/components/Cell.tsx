@@ -43,6 +43,7 @@ export function Cell<T>({ row, rowIndex, colDef }: CellProps<T>) {
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         borderRight: "1px solid #eee",
+        boxSizing: "border-box",
       }}
     >
       {content}

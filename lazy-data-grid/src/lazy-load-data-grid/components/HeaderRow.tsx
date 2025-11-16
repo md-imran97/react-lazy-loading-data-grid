@@ -36,6 +36,7 @@ function GenericHeaderRow<T>(
               maxWidth: col.maxWidth,
               display: "flex",
               alignItems: "center",
+              boxSizing: "border-box",
               px: 1,
               justifyContent:
                 col.align === "right"
