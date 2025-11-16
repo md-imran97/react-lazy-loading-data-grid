@@ -58,6 +58,7 @@ export function GenericLazyDataGrid<T>(
     []
   );
   const handleScroll = (forceReload = false) => {
+    debugger;
     const el = gridBodyRootRef.current;
     if (!el) return;
     const topVisiblePosition = el.scrollTop;
@@ -194,7 +195,7 @@ export function GenericLazyDataGrid<T>(
             <Box
               className="lazy-data-grid-body-root"
               ref={gridBodyRootRef}
-              onScroll={handleScroll}
+              onScroll={() => handleScroll()}
             >
               <Box
                 height={`${gridBodyHeight}px`}
